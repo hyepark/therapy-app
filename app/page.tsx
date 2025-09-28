@@ -1,23 +1,10 @@
-const runAnalysis = async () => {
-  try {
-    setLoading(true);
-    const res = await fetch("/api/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ test: true }),
-    });
+"use client";
 
-    const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { error: "서버가 JSON이 아닌 응답을 보냈습니다", raw: text };
-    }
-    setResult(data);
-  } catch (e: any) {
-    setResult({ error: e.message });
-  } finally {
-    setLoading(false);
-  }
-};
+export default function Home() {
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>TheraLens Demo</h1>
+      <p>Next.js 배포 테스트 페이지 🚀</p>
+    </div>
+  );
+}
