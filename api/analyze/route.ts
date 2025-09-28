@@ -12,22 +12,27 @@ export async function POST(req: Request) {
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: "테스트 메시지" }
-        ]
-      })
+          { role: "user", content: "테스트 메시지" },
+        ],
+      }),
     });
 
+    const text = await res.text(); // ✅ JSON이든 에러든 전부 문자열로 받음
+    let data;
+    try {
+      data = JSON.parse(text); // ✅ 정상 JSON일 경우만 파싱
+    } catch {
+      data = { raw: text }; // ✅ JSON이 아닐 경우 원문 그대로 반환
+    }
+
     if (!res.ok) {
-      const text = await res.text();
       throw new Error(`OpenAI API Error: ${res.status} ${text}`);
     }
 
-    const data = await res.json();
-
-    return new Response(
-      JSON.stringify({ result: data.choices?.[0]?.message?.content ?? "" }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (e: any) {
     return new Response(
       JSON.stringify({ error: e.message || "Unknown error" }),
