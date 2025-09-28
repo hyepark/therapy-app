@@ -8,9 +8,11 @@ const client = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
 
-    // OpenAI 호출
+    console.log("BODY:", body);
+    console.log("KEY EXISTS:", !!process.env.OPENAI_API_KEY);
+
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -32,12 +34,21 @@ export async function POST(req: Request) {
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (e: any) {
-    // 에러 발생 시에도 항상 JSON 반환
+    console.error("API ERROR:", e);
+
     return new Response(
       JSON.stringify({
         error: e.message || "Unknown error",
+        stack: e.stack || null,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
+}
+
+export async function GET() {
+  return new Response(
+    JSON.stringify({ message: "이 API는 POST로 호출해야 합니다." }),
+    { status: 200, headers: { "Content-Type": "application/json" } }
+  );
 }
