@@ -1,17 +1,15 @@
 export const runtime = "nodejs";
 
-// GET 요청 처리 (브라우저에서 URL 직접 열 때)
+// GET 요청 (URL 직접 접속 시 안내)
 export async function GET() {
   return new Response(
-    JSON.stringify({
-      message: "이 엔드포인트는 POST 요청을 사용해야 합니다. 브라우저에서 직접 열지 말고, UI 버튼을 눌러 실행하세요."
-    }),
+    JSON.stringify({ message: "POST 요청으로만 사용 가능합니다." }),
     { status: 200, headers: { "Content-Type": "application/json" } }
   );
 }
 
-// POST 요청 처리 (실제 GPT 호출)
-export async function POST() {
+// POST 요청 (GPT 호출)
+export async function POST(req: Request) {
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -30,7 +28,7 @@ export async function POST() {
 
     if (!res.ok) {
       const text = await res.text();
-      throw new Error("OpenAI API Error: " + res.status + " " + text);
+      throw new Error(`OpenAI API Error: ${res.status} ${text}`);
     }
 
     const data = await res.json();
@@ -46,4 +44,3 @@ export async function POST() {
     );
   }
 }
-
