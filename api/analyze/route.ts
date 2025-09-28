@@ -1,14 +1,5 @@
 export const runtime = "nodejs";
 
-// GET 요청 (URL 직접 접속 시 안내)
-export async function GET() {
-  return new Response(
-    JSON.stringify({ message: "POST 요청으로만 사용 가능합니다." }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
-  );
-}
-
-// POST 요청 (GPT 호출)
 export async function POST(req: Request) {
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
