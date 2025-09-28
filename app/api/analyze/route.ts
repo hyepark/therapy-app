@@ -10,12 +10,13 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    // OpenAI 호출
     const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini", // 또는 gpt-4o, gpt-4.1
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: "너는 심리상담 보조 도구야. 사용자의 SNS 행동 데이터를 분석해서 인사이트를 준다.",
+          content: "너는 심리상담 보조 도구다. 사용자의 SNS 행동 데이터를 기반으로 인사이트를 제공한다.",
         },
         {
           role: "user",
@@ -24,13 +25,18 @@ export async function POST(req: Request) {
       ],
     });
 
+    const message = completion.choices?.[0]?.message?.content || "응답 없음";
+
     return new Response(
-      JSON.stringify({ result: completion.choices[0].message.content }),
+      JSON.stringify({ result: message }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (e: any) {
+    // 에러 발생 시에도 항상 JSON 반환
     return new Response(
-      JSON.stringify({ error: e.message || "Unknown error" }),
+      JSON.stringify({
+        error: e.message || "Unknown error",
+      }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
